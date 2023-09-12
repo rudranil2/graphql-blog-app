@@ -32,11 +32,13 @@ const typeDefs = gql`
 
     type Mutation {
         postCreate(input: PostCreateInput!): PostPayload!
+        postUpdate(id: ID!, input: PostCreateInput!): PostPayload!
+        postDelete(id: ID!): PostPayload!
     }
 
-    input PostCreateInput {
-        title: String!
-        content: String!
+    input PostCreateInput {         # Based on Principle no 14 - relaxing required constraints
+        title: String
+        content: String
         # authorId: ID!
     }
 
