@@ -34,7 +34,7 @@ const typeDefs = gql`
         postCreate(input: PostCreateInput!): PostPayload!
         postUpdate(id: ID!, input: PostCreateInput!): PostPayload!
         postDelete(id: ID!): PostPayload!
-        signup(input: SignUpInput): User
+        signup(input: SignUpInput): AuthPayload!
     }
 
     input PostCreateInput {         # Based on Principle no 14 - relaxing required constraints
@@ -57,6 +57,11 @@ const typeDefs = gql`
         email: String!
         password: String!
         bio: String
+    }
+
+    type AuthPayload {
+        userErrors: [UserError!]
+        user: User
     }
 
 `

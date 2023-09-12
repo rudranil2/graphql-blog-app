@@ -25,7 +25,11 @@ export interface SignUpPayload extends SignInPayload {
     bio?: string
 }
 
-export interface UserPayloadType {
+export interface AuthPayloadType {
     userErrors: UserError[] | null  //  {}[] -> Empty Array of objects
     user: User | null
+}
+
+export interface PayloadErrorType {
+    error: Boolean, userErrors: UserError[]
 }
