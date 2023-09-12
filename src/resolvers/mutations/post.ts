@@ -1,12 +1,12 @@
-import { Context } from "../types";
-import { PostPayloadType } from "../types";
+import { Context, PostPayloadType } from "../../types";
 
 interface PostCreateArgs {
     title: string
     content: string
 }
 
-export const Mutation = {
+
+const postResolvers = {
     postCreate: async ( _: any, { input } : { input: PostCreateArgs}, { prisma }: Context): Promise<PostPayloadType> => {
 
         const { title, content } = input;
@@ -95,5 +95,7 @@ export const Mutation = {
             userErrors: null,
             post: updatedPost
         }
-    }
+    },
 }
+
+export default postResolvers;

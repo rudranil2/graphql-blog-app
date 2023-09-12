@@ -1,4 +1,4 @@
-import { Post } from '@prisma/client';
+import { Post, User } from '@prisma/client';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 
@@ -13,4 +13,19 @@ export interface PostPayloadType {
 
 export interface UserError{
     message: string
+}
+
+interface SignInPayload {
+    email: string
+    password: string
+}
+
+export interface SignUpPayload extends SignInPayload {
+    name: string
+    bio?: string
+}
+
+export interface UserPayloadType {
+    userErrors: UserError[] | null  //  {}[] -> Empty Array of objects
+    user: User | null
 }
