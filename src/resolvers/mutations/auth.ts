@@ -1,6 +1,8 @@
-import { Context, SignUpPayload, AuthPayloadType, UserError, PayloadErrorType } from "../../types";
+import { Context, SignUpPayload, AuthPayloadType, UserError, PayloadErrorType, SignInPayload } from "../../types";
 import validator from 'validator';
-import bcypt from 'bcryptjs';
+import bcrypt from 'bcryptjs';
+import jwt from 'jsonwebtoken';
+import { User } from "@prisma/client";
 
 const authResolvers = {
     signup: async ( _: any, { input } : { input: SignUpPayload }, { prisma }: Context ): Promise<AuthPayloadType> => {
@@ -10,8 +12,8 @@ const authResolvers = {
         const { error, userErrors } = payloadValidation(email,password);
         if(error){
             return {
-                user: null,
-                userErrors: userErrors
+                userErrors: userErrors,
+                token: null
             }
         }
 
@@ -26,7 +28,7 @@ const authResolvers = {
                 userErrors: [{
                     message: `Cannot use email`
                 }],
-                user: null
+                token: null
             }
         }
 
@@ -34,7 +36,7 @@ const authResolvers = {
         delete input.bio;
 
         //Hashing password
-        input.password = await bcypt.hash( password, 10 );
+        input.password = await bcrypt.hash( password, 10 );
 
         const user = await prisma.user.create({
             data: {
@@ -49,8 +51,45 @@ const authResolvers = {
 
         return {
             userErrors: null,
-            user
+            token: generateToken({
+                id: user.id,
+                email: user.email
+            })
         }
+    },
+    signin: async ( _: any, { input } : { input: SignInPayload }, { prisma }: Context ): Promise<AuthPayloadType> => {
+
+        const user = await prisma.user.findFirst({
+            where: {
+                deletedAt: null,
+                email: input.email
+            }
+        });
+
+        if(!user)
+            return {
+                userErrors: [{
+                    message: `Invalid Credentials`
+                }],
+                token: null
+            };
+
+        const authenticated = await bcrypt.compare( input.password, user.password);
+        if(!authenticated)
+            return {
+                userErrors: [{
+                    message: `Invalid Credentials`
+                }],
+                token: null
+            };
+
+        return {
+            userErrors: null,
+            token: generateToken({
+                id: user.id,
+                email: user.email,
+            })
+        };
     }
 }
 
@@ -86,6 +125,21 @@ function payloadValidation(email: string, password: string){
     }
 
     return errorObj;
+}
+
+function generateToken(payload: Pick<User, 'id' | 'email'>): string{
+    const token = jwt.sign(
+        {
+            sub: payload.id,
+            email: payload.email
+        }, 
+        process.env.JWT_PRIVATE_KEY as string, 
+        {
+            expiresIn: 60 * 10 * 3          // 30 mins
+        }
+    );
+
+    return token;
 }
 
 export default authResolvers;

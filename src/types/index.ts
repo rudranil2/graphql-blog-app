@@ -15,7 +15,7 @@ export interface UserError{
     message: string
 }
 
-interface SignInPayload {
+export interface SignInPayload {
     email: string
     password: string
 }
@@ -27,9 +27,10 @@ export interface SignUpPayload extends SignInPayload {
 
 export interface AuthPayloadType {
     userErrors: UserError[] | null  //  {}[] -> Empty Array of objects
-    user: User | null
+    token: string | null
 }
 
 export interface PayloadErrorType {
-    error: Boolean, userErrors: UserError[]
+    error: Boolean, 
+    userErrors: UserError[]
 }
