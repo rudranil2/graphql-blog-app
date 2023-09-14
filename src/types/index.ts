@@ -4,6 +4,7 @@ import { DefaultArgs } from '@prisma/client/runtime/library';
 
 export interface Context {
     prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
+    currentUser: JWTInfo | null
 }
 
 export interface PostPayloadType {
@@ -33,4 +34,14 @@ export interface AuthPayloadType {
 export interface PayloadErrorType {
     error: Boolean, 
     userErrors: UserError[]
+}
+
+export interface JWTPayload {
+    sub: Number, 
+    email: String,
+}
+
+export interface JWTInfo extends JWTPayload{
+    iat: Number, 
+    exp: Number
 }

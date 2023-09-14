@@ -1,4 +1,4 @@
-import { Context, SignUpPayload, AuthPayloadType, UserError, PayloadErrorType, SignInPayload } from "../../types";
+import { Context, SignUpPayload, AuthPayloadType, UserError, PayloadErrorType, SignInPayload, JWTPayload } from "../../types";
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -57,7 +57,7 @@ const authResolvers = {
             })
         }
     },
-    signin: async ( _: any, { input } : { input: SignInPayload }, { prisma }: Context ): Promise<AuthPayloadType> => {
+    signin: async ( _: any, { input } : { input: SignInPayload }, { prisma, currentUser  }: Context ): Promise<AuthPayloadType> => {
 
         const user = await prisma.user.findFirst({
             where: {
@@ -74,8 +74,8 @@ const authResolvers = {
                 token: null
             };
 
-        const authenticated = await bcrypt.compare( input.password, user.password);
-        if(!authenticated)
+        const isPasswordMatch = await bcrypt.compare( input.password, user.password);
+        if(!isPasswordMatch)
             return {
                 userErrors: [{
                     message: `Invalid Credentials`
@@ -128,11 +128,14 @@ function payloadValidation(email: string, password: string){
 }
 
 function generateToken(payload: Pick<User, 'id' | 'email'>): string{
+
+    const jwtPayload: JWTPayload = {
+        sub: payload.id,
+        email: payload.email
+    }
+
     const token = jwt.sign(
-        {
-            sub: payload.id,
-            email: payload.email
-        }, 
+        jwtPayload, 
         process.env.JWT_PRIVATE_KEY as string, 
         {
             expiresIn: 60 * 10 * 3          // 30 mins

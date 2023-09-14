@@ -7,7 +7,15 @@ interface PostCreateArgs {
 
 
 const postResolvers = {
-    postCreate: async ( _: any, { input } : { input: PostCreateArgs}, { prisma }: Context): Promise<PostPayloadType> => {
+    postCreate: async ( _: any, { input } : { input: PostCreateArgs}, { prisma, currentUser }: Context): Promise<PostPayloadType> => {
+
+        if(!currentUser)
+            return {
+                userErrors: [{
+                    message: `401 - Unauthorized Access`
+                }],
+                post: null
+            }
 
         const { title, content } = input;
 
@@ -24,7 +32,7 @@ const postResolvers = {
             data: {
                 title,
                 content,
-                authorId: 1
+                authorId: Number(currentUser.sub)
             }
         });
 
@@ -33,7 +41,15 @@ const postResolvers = {
             post
         }
     },
-    postUpdate: async ( _: any, { id, input } : { id: string, input: PostCreateArgs}, { prisma }: Context): Promise<PostPayloadType> => {
+    postUpdate: async ( _: any, { id, input } : { id: string, input: PostCreateArgs}, { prisma, currentUser }: Context): Promise<PostPayloadType> => {
+
+        if(!currentUser)
+            return {
+                userErrors: [{
+                    message: `401 - Unauthorized Access`
+                }],
+                post: null
+            }
 
         const post = await prisma.post.findFirst({
             where: { 
@@ -50,6 +66,14 @@ const postResolvers = {
                 post: null
             }
         }
+
+        if(post.authorId !== currentUser.sub)
+            return {
+                userErrors: [{
+                    message: `403 - Forbidden Access`
+                }],
+                post: null
+            }
 
         const { title, content } = input;
 
@@ -66,8 +90,16 @@ const postResolvers = {
             post: updatedPost
         }
     },
-    postDelete: async ( _: any, { id } : { id: string }, { prisma }: Context): Promise<PostPayloadType> => {
+    postDelete: async ( _: any, { id } : { id: string }, { prisma , currentUser}: Context): Promise<PostPayloadType> => {
 
+        if(!currentUser)
+            return {
+                userErrors: [{
+                    message: `401 - Unauthorized Access`
+                }],
+                post: null
+            }
+        
         const post = await prisma.post.findFirst({
             where: { 
                 id: Number(id),
@@ -83,6 +115,14 @@ const postResolvers = {
                 post: null
             }
         }
+
+        if(post.authorId !== currentUser.sub)
+            return {
+                userErrors: [{
+                    message: `403 - Forbidden Access`
+                }],
+                post: null
+            }
 
         const updatedPost = await prisma.post.update({
             where: { id: post.id },
