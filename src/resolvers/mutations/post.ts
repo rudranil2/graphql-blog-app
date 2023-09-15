@@ -136,6 +136,52 @@ const postResolvers = {
             post: updatedPost
         }
     },
+    postPublishUnPublish: async ( _: any, { id } : { id: string }, { prisma , currentUser}: Context): Promise<PostPayloadType> => {
+        if(!currentUser)
+        return {
+            userErrors: [{
+                message: `401 - Unauthorized Access`
+            }],
+            post: null
+        }
+    
+        const post = await prisma.post.findFirst({
+            where: { 
+                id: Number(id),
+                deletedAt: null
+            }
+        });
+
+        if(!post){
+            return {
+                userErrors: [{
+                    message: `Post with id: ${id} not found`
+                }],
+                post: null
+            }
+        }
+
+        if(post.authorId !== currentUser.sub)
+            return {
+                userErrors: [{
+                    message: `403 - Forbidden Access`
+                }],
+                post: null
+            }
+
+        const updatedPost = await prisma.post.update({
+            where: { id: post.id },
+            data: {
+                published: !post.published
+            }
+        });
+
+        return {
+            userErrors: null,
+            post: updatedPost
+        }
+
+    }
 }
 
 export default postResolvers;

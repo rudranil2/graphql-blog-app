@@ -45,3 +45,8 @@ export interface JWTInfo extends JWTPayload{
     iat: Number, 
     exp: Number
 }
+
+export interface UserPayloadType {
+    userErrors: UserError[] | null  //  {}[] -> Empty Array of objects
+    user: Omit<User, 'password'> | null
+}

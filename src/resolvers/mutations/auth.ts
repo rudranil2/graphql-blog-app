@@ -1,4 +1,4 @@
-import { Context, SignUpPayload, AuthPayloadType, UserError, PayloadErrorType, SignInPayload, JWTPayload } from "../../types";
+import { Context, SignUpPayload, AuthPayloadType, PayloadErrorType, SignInPayload, JWTPayload } from "../../types";
 import validator from 'validator';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
@@ -57,7 +57,7 @@ const authResolvers = {
             })
         }
     },
-    signin: async ( _: any, { input } : { input: SignInPayload }, { prisma, currentUser  }: Context ): Promise<AuthPayloadType> => {
+    signin: async ( _: any, { input } : { input: SignInPayload }, { prisma  }: Context ): Promise<AuthPayloadType> => {
 
         const user = await prisma.user.findFirst({
             where: {
