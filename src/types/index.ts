@@ -1,4 +1,4 @@
-import { Post, User } from '@prisma/client';
+import { Post, Profile, User } from '@prisma/client';
 import { Prisma, PrismaClient } from '@prisma/client';
 import { DefaultArgs } from '@prisma/client/runtime/library';
 
@@ -37,16 +37,23 @@ export interface PayloadErrorType {
 }
 
 export interface JWTPayload {
-    sub: Number, 
-    email: String,
+    sub: number, 
+    email: string,
 }
 
 export interface JWTInfo extends JWTPayload{
-    iat: Number, 
-    exp: Number
+    iat: number, 
+    exp: number
 }
 
 export interface UserPayloadType {
     userErrors: UserError[] | null  //  {}[] -> Empty Array of objects
     user: Omit<User, 'password'> | null
+}
+
+export interface ProfilePayloadType {
+    userErrors: UserError[] | null  
+    profile: Profile & {
+        user: Pick<User, 'id'| 'name' | 'email'>
+    } | null
 }

@@ -43,7 +43,7 @@ const authResolvers = {
                 ...input,
                 profile: {
                     create: {
-                        bio: bio || ''
+                        bio: bio || 'My Bio'
                     }
                 }
             }

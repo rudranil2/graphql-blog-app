@@ -4,6 +4,7 @@ const typeDefs = gql`
     type Query {
         posts: [Post!]!
         me: UserPayload!
+        profile(userId: ID!): ProfilePayload!
     }
 
     type Post {
@@ -20,7 +21,6 @@ const typeDefs = gql`
         name: String!
         email: String!
 
-        profile: Profile!
         posts: [Post!]!
     }
 
@@ -75,6 +75,11 @@ const typeDefs = gql`
     type UserPayload {
         userErrors: [UserError!]
         user: User
+    }
+
+    type ProfilePayload {
+        userErrors: [UserError!]
+        profile: Profile
     }
 `
 

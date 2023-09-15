@@ -1,5 +1,5 @@
 import { Post } from "@prisma/client";
-import { Context, UserPayloadType } from "../types";
+import { Context, ProfilePayloadType, UserPayloadType } from "../types";
 
 export const Query = {
     posts: async( _ : any, __: any, { prisma }: Context): Promise<Post[]> => {
@@ -12,7 +12,7 @@ export const Query = {
             }
         });
     },
-    me: async ( _: any, __ : any, { prisma, currentUser  }: Context ) : Promise<UserPayloadType> => {
+    me: async ( _: any, __ : any, { prisma, currentUser  }: Context): Promise<UserPayloadType> => {
         if(!currentUser){
             return {
                 userErrors: [{
@@ -24,7 +24,7 @@ export const Query = {
 
         const user = await prisma.user.findFirst({
             where: { 
-                id: Number(currentUser.sub), 
+                id: currentUser.sub, 
                 deletedAt: null 
             },
             select: {
@@ -48,6 +48,37 @@ export const Query = {
         return {
             userErrors: null,
             user
+        }
+    },
+    profile: async ( _: any, { userId }: { userId: string } , { prisma }: Context ) : Promise<ProfilePayloadType> => {
+        const profile = await prisma.profile.findFirst({
+            where: {
+                deletedAt: null,
+                userId: Number(userId)
+            },
+            include: {
+                user: {
+                    select: {
+                        id: true,
+                        email: true,
+                        name: true,
+                    }
+                }
+            }
+        });
+
+        if(!profile){
+            return {
+                userErrors: [{
+                    message: `404 - Profile not found`
+                }],
+                profile: null
+            }
+        }
+
+        return {
+            userErrors: null,
+            profile
         }
     }
 }
