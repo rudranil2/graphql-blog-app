@@ -43,7 +43,6 @@ const typeDefs = gql`
     input PostCreateInput {         # Based on Principle no 14 - relaxing required constraints
         title: String
         content: String
-        # authorId: ID!
     }
 
     type UserError{

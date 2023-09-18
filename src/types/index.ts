@@ -53,7 +53,5 @@ export interface UserPayloadType {
 
 export interface ProfilePayloadType {
     userErrors: UserError[] | null  
-    profile: Profile & {
-        user: Pick<User, 'id'| 'name' | 'email'>
-    } | null
+    profile: Profile | null
 }

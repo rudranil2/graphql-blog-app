@@ -56,15 +56,6 @@ export const Query = {
                 deletedAt: null,
                 userId: Number(userId)
             },
-            include: {
-                user: {
-                    select: {
-                        id: true,
-                        email: true,
-                        name: true,
-                    }
-                }
-            }
         });
 
         if(!profile){
