@@ -1,6 +1,6 @@
 import { ApolloServer } from 'apollo-server';
 import typeDefs from './schema';
-import { Mutation, Query, Post, User } from './resolvers';
+import { Mutation, Query, Post, User, Profile } from './resolvers';
 import { PrismaClient } from '@prisma/client';
 import getCurrentUser from './utils/getUserFromToken';
 import { Context } from './types';
@@ -13,7 +13,8 @@ const server = new ApolloServer({
         Query,
         Mutation,
         Post,
-        User
+        User,
+        Profile
     },
     context: ({ req }): Context => {
 

@@ -5,7 +5,8 @@ export const Query = {
     posts: async( _ : any, __: any, { prisma }: Context): Promise<Post[]> => {
         return await prisma.post.findMany({
             where: {
-                deletedAt: null
+                deletedAt: null,
+                published: true
             },
             orderBy: {
                 createdAt: 'desc'
