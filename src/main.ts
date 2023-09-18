@@ -5,7 +5,7 @@ import { PrismaClient } from '@prisma/client';
 import getCurrentUser from './utils/getUserFromToken';
 import { Context } from './types';
 
-const prisma = new PrismaClient();
+export const prisma = new PrismaClient();
 
 const server = new ApolloServer({
     typeDefs,
